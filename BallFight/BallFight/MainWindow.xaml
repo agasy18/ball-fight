@@ -1,8 +1,18 @@
-﻿<Window x:Class="BallFight.MainWindow"
+﻿<Window
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="MainWindow" Height="350" Width="525">
-    <Grid>
-        
+        xmlns:Themes="clr-namespace:Microsoft.Windows.Themes;assembly=PresentationFramework.Aero" x:Class="BallFight.MainWindow"
+        Title="Ball Fight" Height="480" Width="640" ResizeMode="NoResize" WindowStyle="ToolWindow">
+    <Window.Resources>
+       
+    </Window.Resources>
+    <Window.Background>
+        <ImageBrush ImageSource="res/texture_wallpaper_011.jpg"/>
+    </Window.Background>
+    <Grid >
+        <Button Content="Start" HorizontalAlignment="Left" Margin="394.892,403.904,0,0" VerticalAlignment="Top" Width="110" Style="{DynamicResource OliveButton}" Height="35" FontWeight="Bold"/>
+        <Button Content="End" HorizontalAlignment="Left" Margin="504.892,403.904,0,0" VerticalAlignment="Top" Width="110" Style="{DynamicResource OliveButton}" Height="35"/>
+        <TextBlock HorizontalAlignment="Left" Margin="430.804,368.779,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="23.041" Width="184.088" Foreground="#FF00FFD1" FontSize="16" Background="#B2474747" />
+        <Label Content="Key" HorizontalAlignment="Left" Margin="394.892,366.872,0,0" VerticalAlignment="Top" Width="30.912" Height="24.948" Style="{DynamicResource LabelStyle}" Foreground="#FF00F6AF"/>
     </Grid>
 </Window>
