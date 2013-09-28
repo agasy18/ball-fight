@@ -91,7 +91,77 @@ public static class DebugHelper
     static int bugIndex = 0;
 
 
+    public static string DebugDesc(this object obj)
+    {
+        if (obj == null)
+            return "null";
+        StringBuilder str = new StringBuilder();
+        str.AppendLine("Type : " + obj.GetType().ToString());
+        if (obj is NavigationFailedEventArgs)
+        {
+            var o = obj as NavigationFailedEventArgs;
+            str.AppendLine("Handled = " + o.Handled);
+            str.AppendLine(DebugDesc(o.Exception));
+        }
+        else
+            if (obj is Exception)
+            {
+                var o = obj as Exception;
+                str.AppendLine("Message = " + o.Message);
+                str.AppendLine("InnerException =\n" + o.InnerException.DebugDesc());
+                str.AppendLine("HelpLink = " + o.HelpLink);
+                str.AppendLine("Data =\n" + o.Data.DebugDesc());
+                str.AppendLine("Source = " + o.Source);
+                str.AppendLine("Source = " + o.Source);
+                str.AppendLine("StackTrace = " + o.StackTrace);
+            }
+            else if (obj is IDictionary)
+            {
+                var o = obj as IDictionary;
+                if (o.Count == 0)
+                {
+                    str.Append("{empty}");
+                }
+                else
+                {
+                    str.AppendLine("{\n");
 
+                    var ok = o.Keys.GetEnumerator();
+                    var ov = o.Values.GetEnumerator();
+                    for (int i = 0; i < o.Count; i++)
+                    {
+                        str.AppendLine(ok.Current + " : " + ov.Current);
+                        ok.MoveNext();
+                        ov.MoveNext();
+                    }
+                    str.AppendLine("\n}");
+                }
+            }
+            else if (obj is ICollection)
+            {
+
+                var o = obj as ICollection;
+                if (o.Count == 0)
+                {
+                    str.Append("{empty}");
+                }
+                else
+                {
+                    str.Append("[\n");
+                    foreach (var item in o)
+                    {
+                        str.Append(item);
+                        str.AppendLine(",");
+                    }
+                    str.AppendLine("\n]");
+                }
+            }
+            else
+            {
+                obj.ToString();
+            }
+        return str.ToString();
+    }
 
 
 }

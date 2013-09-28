@@ -1,7 +1,9 @@
 ﻿using BallNetModel;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
+using System.Management;
 using System.ServiceModel;
 using System.Text;
 using System.Threading.Tasks;
@@ -50,16 +52,55 @@ namespace Ball_Fight
             mar.Left = Math.Min(Math.Max(0, e.GetPosition(GameBoard).X - Player1.Width / 2), GameBoard.Width - Player1.Width);
             Player1.Margin = mar;
             Ball.Margin = BallMagine;
+           
+        }
 
-
-            //////////////////////////////////////////////////////////////////////////
-            BallMessage newMessage = new BallMessage()
+        private void SendMessage(Thickness mar)
+        {
+            if (remoteProxy == null|| clientUser ==null) return;
+            Task.Run(() =>
             {
-                Date = DateTime.Now,
-                Message = "", //player's coordinates
-                User = clientUser
-            };
-            remoteProxy.SendNewMessage(newMessage);
+                try
+                {
+                    //////////////////////////////////////////////////////////////////////////
+                    BallMessage newMessage = new BallMessage()
+                    {
+                        Date = DateTime.Now,
+                        Message = "", //player's coordinates
+                        User = clientUser,
+                        Margine = mar
+                    };
+                    remoteProxy.SendNewMessage(newMessage);
+                    NetworkError = false;
+                }
+                catch(Exception ex)
+                {
+                    ex.DebugDesc().Log("SendMargine");
+                    NetworkError = true;
+                }
+            });
+        }
+
+        public string AppAddress
+        {
+            get
+            {
+                ManagementClass mc = new ManagementClass("Win32_NetworkAdapterConfiguration");
+                ManagementObjectCollection moc = mc.GetInstances();
+
+                string MACAddress = String.Empty;
+
+                foreach (ManagementObject mo in moc)
+                {
+                    if (MACAddress == String.Empty)
+                    { // only return MAC Address from first card
+                        if ((bool)mo["IPEnabled"] == true) MACAddress = mo["MacAddress"].ToString();
+                    }
+                    mo.Dispose();
+                }
+
+                return MACAddress + Process.GetCurrentProcess().Id;
+            }
         }
 
         private void CurWindow_Activated(object sender, EventArgs e)
@@ -96,6 +137,9 @@ namespace Ball_Fight
                     mar.Left = Math.Min(Math.Max(0, mar.Left + KeyDelta), GameBoard.Width - Player1.Width);
                     Player1.Margin = mar;
                 }
+                else
+                    return;
+               
             }
         }
         int fpsCounter = 0;
@@ -107,7 +151,7 @@ namespace Ball_Fight
         
         private void CurWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            
+            EndButtonPressed(sender, null);     
         }
 
         bool diasbleTimer = false;
@@ -116,22 +160,32 @@ namespace Ball_Fight
         {
             if (First)
             {
+
                 First = true;
+                ResetBallParams();
                 LoadUpdateSystem();
                 LoadSpeedSystem();
                 LoadFpsSystem();
-                Start();        
+               // Start();        
                 for (; ;)
                 {
                     if (diasbleTimer == false)
                     {
-                        for (int i = 0; i < gameSpeed; i++)
+                        
                         tick();
                     }
-                    await Task.Delay(1);
+                    await Task.Delay(10);
                 }
                
             }
+        }
+
+        private void ResetBallParams()
+        {
+            ballAngel = Math.PI / 2;
+            gameSpeed = 1;
+            IsGameStarted = false;
+            BallPosition = new Vector(GameBoard.Width / 2, GameBoard.Height / 2);
         }
 
         private void LoadFpsSystem()
@@ -152,21 +206,79 @@ namespace Ball_Fight
         private void LoadUpdateSystem()
         {
             Timer fpsTimer;
-            fpsTimer = new Timer(1000/60);
+            fpsTimer = new Timer(1000 / 60);
             fpsTimer.Elapsed += (s, q) =>
             {
                 fpsLabel.Dispatcher.BeginInvoke(new Action(() =>
                 {
-                    GameBoard_LayoutUpdated(null,null);
+                    GameBoard_LayoutUpdated(null, null);
+
                 }));
             };
-            
+
             fpsTimer.Start();
+
+
+            Timer netTimer;
+            netTimer = new Timer(1000/60);
+            netTimer.Elapsed += (s, q) =>
+                 {
+                     if (clientUser == null)
+                     {
+                         return;
+                     }
+                     Dispatcher.BeginInvoke(new Action(() =>
+                     {
+                         SendMessage(Player1.Margin);
+                     }));
+                     try
+                     {
+                         //////////////////////////////////////////////////////////////////////////
+                         List<BallMessage> messages = remoteProxy.GetNewMessages(clientUser);
+                         if (messages != null)
+                         {
+
+                             foreach (var message in messages)
+                                 Dispatcher.BeginInvoke(new Action(() =>
+                                   {
+                                       if (!IsGameStarted)
+                                       {
+                                           StartGame(message);
+                                           IsGameStarted = true;
+                                       }
+                                       var mar= Player2.Margin;
+                                       mar.Left = message.Margine.Left;
+                                       Player2.Margin = mar;
+                                   }));
+
+                         }
+                         NetworkError = false;
+
+                     }
+                     catch (Exception e)
+                     {
+                         e.DebugDesc().Log("ChackNet");
+                         NetworkError = true;
+                     }
+
+                 };
+            netTimer.Start();
         }
+
+        private void StartGame(BallMessage message)
+        {
+            BallPosition = new Vector(GameBoard.Width / 2, GameBoard.Height / 2);
+            gameSpeed = 1;
+            Player2Label.Content = message.User.UserName;
+            ballAngel = (string.Compare(message.User.AppAddress, clientUser.AppAddress) > 0 ? -1 : 1) * Math.PI / 3;
+        }
+        
+        
+   
         private void LoadSpeedSystem()
         {
             Timer fpsTimer;
-            fpsTimer = new Timer(1000 * 2);
+            fpsTimer = new Timer(1000 * 20);
             GameSpeedLabel.Content = gameSpeed;
             fpsTimer.Elapsed += (s, q) =>
             {
@@ -174,8 +286,7 @@ namespace Ball_Fight
                 {
                     if (gameSpeed > 10) 
                         return;
-                    gameSpeed++;
-                    
+                    gameSpeed++;                   
                     GameSpeedLabel.Content = gameSpeed;
                 }));
             };
@@ -184,7 +295,7 @@ namespace Ball_Fight
         }
 
         int gameSpeed = 1;
-        double ballAngel;
+        double ballAngel=Math.PI/2;
         const double ballV = 1;
 
         Vector BallPosition;
@@ -199,8 +310,8 @@ namespace Ball_Fight
         {
             get
             {
-                var dx = ballV * Math.Sin(ballAngel);
-                var dy = ballV * Math.Cos(ballAngel); 
+                var dx = ballV *gameSpeed* Math.Sin(ballAngel);
+                var dy = ballV*gameSpeed * Math.Cos(ballAngel); 
                 return new Vector(dx, dy);
             }
         }
@@ -227,29 +338,22 @@ namespace Ball_Fight
             }
             else if (mar.Top <= 0)
             {
-                GameOver(Player2Label.Content as string);
+                GameOver(false);
                 ballAngel = Math.PI - ballAngel;
             }
             else if (mar.Bottom >= GameBoard.Height )
             {
-                GameOver(PlayerTextBox.Text);
+                GameOver(true);
                 ballAngel = Math.PI - ballAngel;
             }
 
 
-            //////////////////////////////////////////////////////////////////////////
-            List<BallMessage> messages = remoteProxy.GetNewMessages(clientUser);
-            if (messages != null)
-            {
-                String msg;
-                foreach (var message in messages)
-                    msg = message.Message; // analyzing messages.
-            }       
+                
         }
 
-        private void GameOver(string p)
+        private void GameOver(bool I)
         {
-            p.Log("Game Over");
+            ResetBallParams();
         }
 
      
@@ -273,39 +377,76 @@ namespace Ball_Fight
         private ChannelFactory<IBallService> remoteFactory;
         private void Start()
         {
-            ballAngel =- Math.PI / 3;
-            try
-            {
-                lblStatus.Content = "Connecting...";
-                if (!String.IsNullOrEmpty(PlayerTextBox.Text))
-                {
-                    remoteFactory = new ChannelFactory<IBallService>("BallConfig");
-                    remoteProxy = remoteFactory.CreateChannel();
-                    clientUser = remoteProxy.ClientConnect(PlayerTextBox.Text,KeyTextBox.Text);
 
-                    if (clientUser != null)
+           
+            string userName = PlayerTextBox.Text;
+            string keyText = KeyTextBox.Text;
+            Task.Run(() =>
+                {
+                    try
                     {
-                        ConfigConnectedState();
-                        lblStatus.Content = "Connected as: " + clientUser.UserName;
+                        Dispatcher.BeginInvoke(new Action(() =>
+                        {
+                            lblStatus.Content = "Connecting...";
+                        }));
+                        if (!String.IsNullOrEmpty(userName))
+                        {
+                            remoteFactory = new ChannelFactory<IBallService>("BallConfig");
+                            remoteProxy = remoteFactory.CreateChannel(); 
+                            clientUser = remoteProxy.ClientConnect(userName, AppAddress, keyText);
+
+                            if (clientUser != null)
+                            {
+                                Dispatcher.BeginInvoke(new Action(()=>{
+                                    ConfigConnectedState();
+                                    lblStatus.Content = "Connected as: " + clientUser.UserName;
+                                }));
+                            }
+                        }
+                        else
+                        {
+                            Dispatcher.BeginInvoke(new Action(() =>
+                            {
+                                lblStatus.Content = "Disconnected";
+                            }));
+                        }
                     }
-                }
-                else
-                    lblStatus.Content = "Disconnected";
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("An error has ocurred\nClient cannot connect\nMessage:" + ex.Message,
-                    "FATAL ERROR", MessageBoxButton.OK,MessageBoxImage.Error);
-            }
+                    catch (Exception ex)
+                    {
+                        ex.DebugDesc().Log("Start");           
+                    }
+                });
         }
 
         private void ConfigConnectedState()
         {
-
+            
         }
 
         public IBallService remoteProxy { get; set; }
 
         public BallUser clientUser { get; set; }
+
+        public bool NetworkError { get; set; }
+
+        private void EndButtonPressed(object sender, RoutedEventArgs e)
+        {
+            if (!NetworkError)
+            {
+                Task.Run(() =>
+                {
+                    try
+                    {
+                        remoteProxy.RemoveUser(clientUser);
+                    }
+                    catch(Exception ex)
+                    {
+                        ex.DebugDesc().Log("EndButtonPressed");       
+                    }
+                });
+            }
+        }
+
+        public bool IsGameStarted { get; set; }
     }
 }

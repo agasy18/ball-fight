@@ -8,18 +8,19 @@ using System.Text;
 namespace BallNetModel
 {
     [ServiceBehavior(InstanceContextMode = InstanceContextMode.Single)]
-    public class BallService :IBallService
+    public class BallService : IBallService
     {
-        private BallEngine mainEngine=new BallEngine();
+        private BallEngine mainEngine = new BallEngine();
 
         /// <summary>
         /// 
         /// </summary>
         /// <param name="userName"></param>
         /// <returns></returns>
-        public BallUser ClientConnect(string userName,string key)
+        public BallUser ClientConnect(string userName, string appAddress, string key)
         {
-            return mainEngine.AddNewBallUser(new BallUser() { UserName = userName , Key = key});        
+            System.Console.WriteLine("ClientConnect({0},{1})", userName, key);
+            return mainEngine.AddNewBallUser(new BallUser() { UserName = userName, Key = key, AppAddress = appAddress });
         }
 
         /// <summary>
@@ -52,8 +53,9 @@ namespace BallNetModel
         public void RemoveUser(BallUser user)
         {
             mainEngine.RemoveUser(user);
+            System.Console.WriteLine(user.AppAddress + " " + user.UserName + " Loged out");
         }
 
- 
+
     }
 }

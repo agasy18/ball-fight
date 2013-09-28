@@ -11,7 +11,7 @@ namespace BallNetModel
     public interface IBallService
     {
         [OperationContract]
-        BallUser ClientConnect(string userName,string key);
+        BallUser ClientConnect(string userName,string appAddress,string key);
 
         [OperationContract]
         List<BallMessage> GetNewMessages(BallUser user);

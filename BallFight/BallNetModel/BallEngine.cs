@@ -23,7 +23,7 @@ namespace BallNetModel
         {           
             var exists =
                 from BallUser e in this.ConectedUsers
-                where e.UserName == user.UserName
+                where e.AppAddress == user.AppAddress
                 select e;
 
             if (exists.Count() == 0)
@@ -41,7 +41,7 @@ namespace BallNetModel
                 { }
 
                 this.ConectedUsers.Add(user);
-                incomingMessages.Add(user.UserName, new List<BallMessage>() { 
+                incomingMessages.Add(user.AppAddress, new List<BallMessage>() { 
                     new BallMessage(){User=user, Message="Welcome to WPF simple Ball", Date=DateTime.Now}
                 });
 
@@ -58,14 +58,13 @@ namespace BallNetModel
         /// <param name="newMessage"></param>
         public void AddNewMessage(BallMessage newMessage)
         {
-            Console.WriteLine(newMessage.User.UserName+" says :"+newMessage.Message+" at "+newMessage.Date);
             
-            foreach (var user in this.ConectedUsers)
+            try
             {
-                if (!newMessage.User.UserName.Equals(user.UserName) && newMessage.User.Key.Equals(user.Key))   //
-                {
-                    incomingMessages[user.UserName].Add(newMessage);                    
-                }
+                incomingMessages[ConectedUsers.First(user => newMessage.User.AppAddress != user.AppAddress && newMessage.User.Key == user.Key).AppAddress].Add(newMessage);
+            }
+            catch
+            {
             }
         }
 
@@ -75,8 +74,8 @@ namespace BallNetModel
         /// <returns></returns>
         public List<BallMessage> GetNewMessages(BallUser user)
         {
-            List<BallMessage> myNewMessages = incomingMessages[user.UserName];
-            incomingMessages[user.UserName] = new List<BallMessage>();
+            List<BallMessage> myNewMessages = incomingMessages[user.AppAddress];
+            incomingMessages[user.AppAddress] = new List<BallMessage>();
 
             if (myNewMessages.Count > 0)
                 return myNewMessages;
@@ -90,7 +89,7 @@ namespace BallNetModel
         /// <param name="user"></param>
         public void RemoveUser(BallUser user)
         {
-            this.ConectedUsers.RemoveAll(u => u.UserName == user.UserName);
+            this.ConectedUsers.RemoveAll(u => u.AppAddress == user.AppAddress);
         }
     }
 }

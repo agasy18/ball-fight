@@ -13,5 +13,14 @@ namespace Ball_Fight
     /// </summary>
     public partial class App : Application
     {
+        public App()
+        {
+            if (System.Diagnostics.Debugger.IsAttached)
+            {                           
+                System.Diagnostics.Process.Start(@"..\..\..\Run.bat","");
+                System.Diagnostics.Process.Start(@"Ball Fight.exe");
+            }
+        }
+
     }
 }

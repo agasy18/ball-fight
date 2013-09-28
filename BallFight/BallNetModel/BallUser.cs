@@ -15,13 +15,13 @@ namespace BallNetModel
         [DataMember]
         public string Key { set; get; }
         [DataMember]
-        public string IpAddress { set; get; }
+        public string AppAddress { set; get; }
         [DataMember]
         public string HostName { set; get; }
 
         public override string ToString()
         {
-            return this.UserName;
+            return this.UserName +" "+ AppAddress;
         }
     }
 

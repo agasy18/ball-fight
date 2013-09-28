@@ -59,7 +59,7 @@
             </Rectangle>
             <Label x:Name="MessigeLabel" Content="Label" Canvas.Left="10" Canvas.Top="197" Width="281" Height="41" Foreground="Red" FontSize="22" Visibility="Hidden"/>
         </Canvas>
-        <Button Content="End" HorizontalAlignment="Left" Margin="445,404,0,0" VerticalAlignment="Top" Width="110" Style="{DynamicResource OliveButton}" Height="35" FontWeight="Bold"/>
+        <Button Content="End" HorizontalAlignment="Left" Margin="445,404,0,0" VerticalAlignment="Top" Width="110" Style="{DynamicResource OliveButton}" Height="35" FontWeight="Bold" Click="EndButtonPressed"/>
         <TextBox x:Name="PlayerTextBox" HorizontalAlignment="Left" Margin="375,20,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="24" Width="176" Foreground="#FF00FFD1" FontSize="16" Text="Player" LostKeyboardFocus="PlayerTextBox_LostKeyboardFocus" IsEnabled="False" />
         <Label Content="VS" HorizontalAlignment="Left" Margin="330,46,0,0" VerticalAlignment="Top" Width="45" Height="25" Style="{DynamicResource LabelStyle}" Foreground="#FF00F6AF" RenderTransformOrigin="0.291,-12.747"/>
         <Label Content="PLayer 2" x:Name="Player2Label" HorizontalAlignment="Left" Margin="375,46,0,0" VerticalAlignment="Top" Width="176" Height="25" Style="{DynamicResource LabelStyle}" Foreground="#FF00F6AF" RenderTransformOrigin="0.291,-12.747"/>

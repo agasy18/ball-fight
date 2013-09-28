@@ -13,6 +13,8 @@ namespace BallServer
     {
         static void Main(string[] args)
         {
+         /* if(args!=null)
+            System.Diagnostics.Debugger.Launch();*/
             Program obj = new Program();
 
             if (obj.IsCurrentlyRunningAsAdmin())
@@ -22,7 +24,8 @@ namespace BallServer
         }
 
         private void RunServer()
-        {
+        {            
+            System.Console.WriteLine("Is Debuging ="+ System.Diagnostics.Debugger.IsAttached);
             using (ServiceHost host = new ServiceHost(typeof(BallService)))
             {
                 host.Open();
