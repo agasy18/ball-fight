@@ -50,6 +50,16 @@ namespace Ball_Fight
             mar.Left = Math.Min(Math.Max(0, e.GetPosition(GameBoard).X - Player1.Width / 2), GameBoard.Width - Player1.Width);
             Player1.Margin = mar;
             Ball.Margin = BallMagine;
+
+
+            //////////////////////////////////////////////////////////////////////////
+            BallMessage newMessage = new BallMessage()
+            {
+                Date = DateTime.Now,
+                Message = "", //player's coordinates
+                User = clientUser
+            };
+            remoteProxy.SendNewMessage(newMessage);
         }
 
         private void CurWindow_Activated(object sender, EventArgs e)
@@ -115,7 +125,7 @@ namespace Ball_Fight
                 {
                     if (diasbleTimer == false)
                     {
-                        for (int i = 0; i < gameSpeed; i++)                        
+                        for (int i = 0; i < gameSpeed; i++)
                         tick();
                     }
                     await Task.Delay(1);
@@ -225,6 +235,16 @@ namespace Ball_Fight
                 GameOver(PlayerTextBox.Text);
                 ballAngel = Math.PI - ballAngel;
             }
+
+
+            //////////////////////////////////////////////////////////////////////////
+            List<BallMessage> messages = remoteProxy.GetNewMessages(clientUser);
+            if (messages != null)
+            {
+                String msg;
+                foreach (var message in messages)
+                    msg = message.Message; // analyzing messages.
+            }       
         }
 
         private void GameOver(string p)
