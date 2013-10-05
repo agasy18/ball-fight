@@ -65,6 +65,7 @@
         <Label Content="Speed" HorizontalAlignment="Left" Margin="330,76,0,0" VerticalAlignment="Top" Width="45" Height="25" Style="{DynamicResource LabelStyle}" Foreground="#FF00F6AF" RenderTransformOrigin="0.291,-12.747"/>
         <Label Content="PLayer 2" x:Name="GameSpeedLabel" HorizontalAlignment="Left" Margin="375,76,0,0" VerticalAlignment="Top" Width="176" Height="25" Style="{DynamicResource LabelStyle}" Foreground="#FF00F6AF" RenderTransformOrigin="0.291,-12.747"/>
         <Label x:Name="lblStatus" Content="Status" HorizontalAlignment="Left" Margin="330,106,0,0" VerticalAlignment="Top" Width="221" Height="25" Style="{DynamicResource LabelStyle}" Foreground="#FF00F6AF" RenderTransformOrigin="0.291,-12.747"/>
+        <TextBox x:Name="LogBox" IsEnabled="False" HorizontalAlignment="Left" Height="211" Margin="330,136,0,0" TextWrapping="Wrap" Text="Hello&#xD;&#xA;" VerticalAlignment="Top" Width="221 "/>
 
     </Grid>
 </Window>
