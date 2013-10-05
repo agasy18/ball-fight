@@ -8,7 +8,6 @@ namespace BallNetModel
     public class BallEngine
     {
         private List<BallUser> conectedUsers = new List<BallUser>();
-        private Dictionary<string,List<BallMessage>> incomingMessages= new Dictionary<string,List<BallMessage>>();      
         public List<BallUser> ConectedUsers
         {
             get { return conectedUsers; }
@@ -47,9 +46,6 @@ namespace BallNetModel
                 }
 
                 this.ConectedUsers.Add(user);
-                incomingMessages.Add(user.AppAddress, new List<BallMessage>() { 
-                    new BallMessage(){User=user, Message="Welcome to WPF simple Ball", Date=DateTime.Now}
-                });
 
                 Console.WriteLine("New user connected: " + user);
                 return user;
@@ -66,7 +62,6 @@ namespace BallNetModel
         {
             try
             {
-                //incomingMessages[ConectedUsers.First(user => newMessage.User.AppAddress != user.AppAddress && newMessage.User.Key == user.Key).AppAddress].Add(newMessage);
                 var ballModel = ballModels[newMessage.User.Key];
                 
                 if (newMessage.User.IsFirstUser)
@@ -90,14 +85,6 @@ namespace BallNetModel
         /// <returns></returns>
         public List<BallMessage> GetNewMessages(BallUser user)
         {
-            /*List<BallMessage> myNewMessages = incomingMessages[user.AppAddress];
-            incomingMessages[user.AppAddress] = new List<BallMessage>();
-
-            if (myNewMessages.Count > 0)
-                return myNewMessages;
-            else
-                return null;*/
-
             try
             {
                 var ballModel = ballModels[user.Key];
