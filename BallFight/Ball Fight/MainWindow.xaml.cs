@@ -191,6 +191,7 @@ namespace Ball_Fight
                          {
 
                              foreach (var message in messages)
+                             {
                                  Dispatcher.BeginInvoke(new Action(() =>
                                    {
                                        if (!IsGameStarted)
@@ -198,12 +199,20 @@ namespace Ball_Fight
                                            StartGame(message);
                                            IsGameStarted = true;
                                        }
-                                       var mar= Player2.Margin;
+                                       if (!String.IsNullOrEmpty(message.Message))
+                                       {
+                                           netTimer.Stop();
+                                           MessageBox.Show(message.Message, "Game over");
+                                           netTimer.Start();
+                                       }
+
+                                       var mar = Player2.Margin;
                                        mar.Left = message.Margine.Left;
                                        Player2.Margin = mar;
                                        Ball.Margin = message.BallMargine;
                                        GameSpeedLabel.Content = message.GameSpeed;
                                    }));
+                             }
 
                          }
                          NetworkError = false;

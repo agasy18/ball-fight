@@ -111,6 +111,19 @@ namespace BallNetModel
                     message.Margine = new System.Windows.Thickness(w, 0, 0, 0);
                 }
 
+                switch(ballModel.GameOverPlayer)
+                {
+                    case PlayerEnum.Player1:
+                        message.Message = message.User.IsFirstUser ? "You lose" : "You won";
+                        break;
+                    case PlayerEnum.Player2:
+                        message.Message = (!message.User.IsFirstUser) ? "You lose" : "You won";
+                        break;
+                    default:
+                        message.Message = "";
+                        break;
+                }
+
                 return new List<BallMessage>() { message };
             }
             catch

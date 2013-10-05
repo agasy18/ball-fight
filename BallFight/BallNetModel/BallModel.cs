@@ -8,6 +8,13 @@ using System.Windows;
 
 namespace BallNetModel
 {
+    enum PlayerEnum
+    {
+        None,
+        Player1,
+        Player2
+    }
+
     class BallModel
     {
         public Size BallSize { get; private set; }
@@ -79,26 +86,28 @@ namespace BallNetModel
             }
             else if (mar.Top <= 0)
             {
-                GameOver(false);
+                GameOver(PlayerEnum.Player2);
                 ballAngel = Math.PI - ballAngel;
             }
             else if (mar.Bottom >= BoardSize.Height)
             {
-                GameOver(true);
+                GameOver(PlayerEnum.Player1);
                 ballAngel = Math.PI - ballAngel;
             }
         }
 
-        private void GameOver(bool I)
+        private void GameOver(PlayerEnum I)
         {
+            GameOverPlayer = I;
             ResetBallParams();
         }
+
+
 
         private void ResetBallParams()
         {
             ballAngel = Math.PI / 3;
             gameSpeed = 1;
-            
             BallPosition = new Vector(BoardSize.Width / 2, BoardSize.Height / 2);
         }
 
@@ -139,5 +148,7 @@ namespace BallNetModel
                 await Task.Delay(10);
             }
         }
+
+        public PlayerEnum GameOverPlayer { get; set; }
     }
 }
