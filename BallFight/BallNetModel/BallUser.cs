@@ -18,6 +18,8 @@ namespace BallNetModel
         public string AppAddress { set; get; }
         [DataMember]
         public string HostName { set; get; }
+        [DataMember]
+        public bool IsFirstUser { get; set; }
 
         public override string ToString()
         {

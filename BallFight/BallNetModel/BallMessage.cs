@@ -10,7 +10,6 @@ namespace BallNetModel
     [DataContract]
     public class BallMessage
     {
-
         [DataMember]
         public BallUser User { set; get; }
         [DataMember]
@@ -19,6 +18,10 @@ namespace BallNetModel
         public DateTime Date { set; get; }
         [DataMember]
         public System.Windows.Thickness Margine { get; set; }
+        [DataMember]
+        public System.Windows.Thickness BallMargine { get; set; }
+        [DataMember]
+        public int GameSpeed { set; get; }
 
         public override string ToString()
         {

@@ -32,10 +32,10 @@ namespace Ball_Fight
         public MainWindow()
         {
             InitializeComponent();
-            BallPosition = new Vector(Ball.Margin.Left, Ball.Margin.Top);
+            //BallPosition = new Vector(Ball.Margin.Left, Ball.Margin.Top);
             PlayerTextBox.Text = Environment.UserName;
         }
-
+        
         private void Canvas_MouseEnter_1(object sender, MouseEventArgs e)
         {
             
@@ -51,8 +51,7 @@ namespace Ball_Fight
             var mar = Player1.Margin;
             mar.Left = Math.Min(Math.Max(0, e.GetPosition(GameBoard).X - Player1.Width / 2), GameBoard.Width - Player1.Width);
             Player1.Margin = mar;
-            Ball.Margin = BallMagine;
-           
+            //Ball.Margin = BallMagine;
         }
 
         private void SendMessage(Thickness mar)
@@ -142,11 +141,10 @@ namespace Ball_Fight
                
             }
         }
-        int fpsCounter = 0;
+        
         private void GameBoard_LayoutUpdated(object sender, EventArgs e)
         {
-            fpsCounter++;
-            Ball.Margin=BallMagine;           
+            //Ball.Margin=BallMagine;
         }
         
         private void CurWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
@@ -154,71 +152,25 @@ namespace Ball_Fight
             EndButtonPressed(sender, null);     
         }
 
-        bool diasbleTimer = false;
+        
         
         private async void CurWindow_Loaded(object sender, RoutedEventArgs e)
         {
             if (First)
             {
-
-                First = true;
-                ResetBallParams();
+                First = false;
+                //ResetBallParams();
                 LoadUpdateSystem();
-                LoadSpeedSystem();
-                LoadFpsSystem();
-               // Start();        
-                for (; ;)
-                {
-                    if (diasbleTimer == false)
-                    {
-                        
-                        tick();
-                    }
-                    await Task.Delay(10);
-                }
+
+                // Start();        
+                
                
             }
         }
 
-        private void ResetBallParams()
-        {
-            ballAngel = Math.PI / 2;
-            gameSpeed = 1;
-            IsGameStarted = false;
-            BallPosition = new Vector(GameBoard.Width / 2, GameBoard.Height / 2);
-        }
-
-        private void LoadFpsSystem()
-        {
-            Timer fpsTimer;
-            fpsTimer = new Timer(1000);
-            fpsTimer.Elapsed += (s, q) =>
-            {
-                int fps = fpsCounter;
-                fpsCounter = 0;
-                fpsLabel.Dispatcher.BeginInvoke(new Action(() =>
-                {
-                    fpsLabel.Content ="FPS: " + fps;
-                }));
-            };
-            fpsTimer.Start();
-        }
+        
         private void LoadUpdateSystem()
         {
-            Timer fpsTimer;
-            fpsTimer = new Timer(1000 / 60);
-            fpsTimer.Elapsed += (s, q) =>
-            {
-                fpsLabel.Dispatcher.BeginInvoke(new Action(() =>
-                {
-                    GameBoard_LayoutUpdated(null, null);
-
-                }));
-            };
-
-            fpsTimer.Start();
-
-
             Timer netTimer;
             netTimer = new Timer(1000/60);
             netTimer.Elapsed += (s, q) =>
@@ -249,6 +201,8 @@ namespace Ball_Fight
                                        var mar= Player2.Margin;
                                        mar.Left = message.Margine.Left;
                                        Player2.Margin = mar;
+                                       Ball.Margin = message.BallMargine;
+                                       GameSpeedLabel.Content = message.GameSpeed;
                                    }));
 
                          }
@@ -267,98 +221,12 @@ namespace Ball_Fight
 
         private void StartGame(BallMessage message)
         {
-            BallPosition = new Vector(GameBoard.Width / 2, GameBoard.Height / 2);
-            gameSpeed = 1;
+            //BallPosition = new Vector(GameBoard.Width / 2, GameBoard.Height / 2);
+            //gameSpeed = 1;
             Player2Label.Content = message.User.UserName;
-            ballAngel = (string.Compare(message.User.AppAddress, clientUser.AppAddress) > 0 ? -1 : 1) * Math.PI / 3;
+            //ballAngel = (string.Compare(message.User.AppAddress, clientUser.AppAddress) > 0 ? -1 : 1) * Math.PI / 3;
         }
-        
-        
-   
-        private void LoadSpeedSystem()
-        {
-            Timer fpsTimer;
-            fpsTimer = new Timer(1000 * 20);
-            GameSpeedLabel.Content = gameSpeed;
-            fpsTimer.Elapsed += (s, q) =>
-            {
-                fpsLabel.Dispatcher.BeginInvoke(new Action(() =>
-                {
-                    if (gameSpeed > 10) 
-                        return;
-                    gameSpeed++;                   
-                    GameSpeedLabel.Content = gameSpeed;
-                }));
-            };
-
-            fpsTimer.Start();
-        }
-
-        int gameSpeed = 1;
-        double ballAngel=Math.PI/2;
-        const double ballV = 1;
-
-        Vector BallPosition;
-        Thickness BallMagine
-        {
-            get
-            {
-                return new Thickness(BallPosition.X, BallPosition.Y, BallPosition.X + Ball.Width, BallPosition.Y + Ball.Height);
-            }
-        }
-        Vector BallVelocity
-        {
-            get
-            {
-                var dx = ballV *gameSpeed* Math.Sin(ballAngel);
-                var dy = ballV*gameSpeed * Math.Cos(ballAngel); 
-                return new Vector(dx, dy);
-            }
-        }
-        private void tick()
-        {
-            BallPosition += BallVelocity;
-            var mar = BallMagine;         
-            if (mar.Left <= 0)
-            {
-                ballAngel = -ballAngel;
-            }
-            else if(mar.Right >= GameBoard.Width )
-            {
-                ballAngel = -ballAngel;
-            }
-
-            else if (mar.Top <= Player2.Margin.Top + Player2.Height && mar.Right - 2 > Player2.Margin.Left && mar.Left + 2 < Player2.Margin.Left + Player2.Width)
-            {
-                ballAngel = Math.PI - ballAngel;
-            }
-            else if (mar.Bottom >= Player1.Margin.Top && mar.Right-2>Player1.Margin.Left && mar.Left+2<Player1.Margin.Left+Player1.Width)
-            {
-                ballAngel = Math.PI - ballAngel;
-            }
-            else if (mar.Top <= 0)
-            {
-                GameOver(false);
-                ballAngel = Math.PI - ballAngel;
-            }
-            else if (mar.Bottom >= GameBoard.Height )
-            {
-                GameOver(true);
-                ballAngel = Math.PI - ballAngel;
-            }
-
-
-                
-        }
-
-        private void GameOver(bool I)
-        {
-            ResetBallParams();
-        }
-
-     
-        
-
+       
 
         private void PlayerTextBox_LostKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
         {
@@ -377,8 +245,6 @@ namespace Ball_Fight
         private ChannelFactory<IBallService> remoteFactory;
         private void Start()
         {
-
-           
             string userName = PlayerTextBox.Text;
             string keyText = KeyTextBox.Text;
             Task.Run(() =>
@@ -397,7 +263,8 @@ namespace Ball_Fight
 
                             if (clientUser != null)
                             {
-                                Dispatcher.BeginInvoke(new Action(()=>{
+                                Dispatcher.BeginInvoke(new Action(() =>
+                                {
                                     ConfigConnectedState();
                                     lblStatus.Content = "Connected as: " + clientUser.UserName;
                                 }));

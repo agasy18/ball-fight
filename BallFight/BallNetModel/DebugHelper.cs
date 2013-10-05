@@ -8,7 +8,7 @@ using System.Text;
 using System.Windows;
 using System.Windows.Navigation;
 
-public static class DebugHelper
+public static class DebugHelper1
 {
     private static DateTime last = DateTime.Now;
 
