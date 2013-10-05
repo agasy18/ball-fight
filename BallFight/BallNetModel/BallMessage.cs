@@ -13,6 +13,8 @@ namespace BallNetModel
         [DataMember]
         public BallUser User { set; get; }
         [DataMember]
+        public string User2Name { set; get; }
+        [DataMember]
         public string Message { set; get; }
         [DataMember]
         public DateTime Date { set; get; }

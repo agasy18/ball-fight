@@ -83,11 +83,27 @@ namespace BallNetModel
         /// 
         /// </summary>
         /// <returns></returns>
+        /// 
+       
         public List<BallMessage> GetNewMessages(BallUser user)
         {
             try
             {
                 var ballModel = ballModels[user.Key];
+                switch (ballModel.GameOverPlayer)
+                {
+                    case PlayerEnum.Player1:
+                        massageP1 = "You lose";
+                        massageP2 = "You won";
+                        break;
+                    case PlayerEnum.Player2:
+                        massageP2 = "You lose";
+                        massageP1 = "You won";
+                        break;
+                    default:
+                        break;
+                }
+                ballModel.GameOverPlayer = PlayerEnum.None;
                 var message = new BallMessage()
                 {
                     User = user,
@@ -95,6 +111,12 @@ namespace BallNetModel
                     Date = DateTime.Now,
                     GameSpeed = ballModel.GameSpeed
                 };
+
+                try
+                {
+                    message.User2Name = conectedUsers.First(user2 => user2.Key == user.Key && user.AppAddress != user2.AppAddress).UserName;
+                }
+                catch{}
 
                 if (user.IsFirstUser)
                 {
@@ -111,17 +133,15 @@ namespace BallNetModel
                     message.Margine = new System.Windows.Thickness(w, 0, 0, 0);
                 }
 
-                switch(ballModel.GameOverPlayer)
+                if (message.User.IsFirstUser)
                 {
-                    case PlayerEnum.Player1:
-                        message.Message = message.User.IsFirstUser ? "You lose" : "You won";
-                        break;
-                    case PlayerEnum.Player2:
-                        message.Message = (!message.User.IsFirstUser) ? "You lose" : "You won";
-                        break;
-                    default:
-                        message.Message = "";
-                        break;
+                    message.Message = massageP1;
+                    massageP1 = "";
+                }
+                else
+                {
+                    message.Message = massageP2;
+                    massageP2 = "";
                 }
 
                 return new List<BallMessage>() { message };
@@ -138,7 +158,17 @@ namespace BallNetModel
         /// <param name="user"></param>
         public void RemoveUser(BallUser user)
         {
-            this.ConectedUsers.RemoveAll(u => u.AppAddress == user.AppAddress);
+            try
+            {
+                this.ConectedUsers.RemoveAll(u => u.AppAddress == user.AppAddress);
+                this.ballModels.Remove(user.Key);
+            }
+            catch
+            { }
         }
+
+        public string massageP1 { get; set; }
+
+        public string massageP2 { get; set; }
     }
 }

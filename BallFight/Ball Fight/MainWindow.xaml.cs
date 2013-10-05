@@ -201,9 +201,8 @@ namespace Ball_Fight
                                        }
                                        if (!String.IsNullOrEmpty(message.Message))
                                        {
-                                           netTimer.Stop();
-                                           MessageBox.Show(message.Message, "Game over");
-                                           netTimer.Start();
+                                           LogBox.AppendText(message.Date.ToString() + " : " + message.Message + "\n");
+                                           LogBox.ScrollToEnd();
                                        }
 
                                        var mar = Player2.Margin;
@@ -232,7 +231,7 @@ namespace Ball_Fight
         {
             //BallPosition = new Vector(GameBoard.Width / 2, GameBoard.Height / 2);
             //gameSpeed = 1;
-            Player2Label.Content = message.User.UserName;
+            Player2Label.Content = message.User2Name;
             //ballAngel = (string.Compare(message.User.AppAddress, clientUser.AppAddress) > 0 ? -1 : 1) * Math.PI / 3;
         }
        
