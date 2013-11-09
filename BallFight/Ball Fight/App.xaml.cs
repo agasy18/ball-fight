@@ -15,11 +15,11 @@ namespace Ball_Fight
     {
         public App()
         {
-            if (System.Diagnostics.Debugger.IsAttached)
-            {                           
-                System.Diagnostics.Process.Start(@"..\..\..\Run.bat","");
-                System.Diagnostics.Process.Start(@"Ball Fight.exe");
-            }
+            //if (System.Diagnostics.Debugger.IsAttached)
+            //{                           
+            //    System.Diagnostics.Process.Start(@"..\..\..\Run.bat","");
+            //    System.Diagnostics.Process.Start(@"Ball Fight.exe");
+            //}
         }
 
     }

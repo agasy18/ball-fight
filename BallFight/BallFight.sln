@@ -2,6 +2,9 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ball Fight", "Ball Fight\Ball Fight.csproj", "{5B66DC8F-9CB5-4027-9CE5-45A40642060E}"
+	ProjectSection(ProjectDependencies) = postProject
+		{EACE543D-4BFE-4E5B-B882-C1D5364DDA53} = {EACE543D-4BFE-4E5B-B882-C1D5364DDA53}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BallServer", "BallServer\BallServer.csproj", "{EACE543D-4BFE-4E5B-B882-C1D5364DDA53}"
 EndProject

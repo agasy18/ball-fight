@@ -255,6 +255,8 @@ namespace Ball_Fight
         {
             string userName = PlayerTextBox.Text;
             string keyText = KeyTextBox.Text;
+            var ip = "http://"+IpTextBox.Text+":12345/ballServer";
+
             Task.Run(() =>
                 {
                     try
@@ -265,7 +267,7 @@ namespace Ball_Fight
                         }));
                         if (!String.IsNullOrEmpty(userName))
                         {
-                            remoteFactory = new ChannelFactory<IBallService>("BallConfig");
+                            remoteFactory = new ChannelFactory<IBallService>("BallConfig",new EndpointAddress(ip));
                             remoteProxy = remoteFactory.CreateChannel(); 
                             clientUser = remoteProxy.ClientConnect(userName, AppAddress, keyText);
 
@@ -292,6 +294,7 @@ namespace Ball_Fight
                     }
                 });
         }
+
 
         private void ConfigConnectedState()
         {
